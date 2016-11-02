@@ -60,19 +60,12 @@ class  Platform(object):
 		
 def main():
 
-	r = PureStrategy(ROCK)
-	s = PureStrategy(ROCK)
+	r = PureStrategy(Vector([1]))
+	s = PureStrategy(Vector([1.03]))
+	print (r.vector.getH(s.vector))
 	print (r == s)
-	m = MixedStrategy([1,2], [0.3, 0.7])
-	n = MixedStrategy([1,2], [0.5, 0.5])
-	s = MixedStrategy([1,2], [0.5, 0.5])
-	print (m == n)
-	print (s == n)
-
-	l = [m, n]
-	l.remove (s)
-	for i in l:
-		print (i)
+	# m = MixedStrategy([Vector([1]),Vector([2])], [0.3, 0.7])
+	# n = MixedStrategy([Vector([1]),Vector([2])], [0.5, 0.5])
 	
 if __name__ == "__main__":
 	main()

@@ -1,31 +1,71 @@
 # Robert White
 # ILLC @ UvA
 # ai.robert.wangshuai@gmail.com
+import math # because we need to use math.inf to represet infinity
+epsilon = 0.005
+
+class Vector(object):
+	l = []
+	def __init__(self, lst):
+		self.l = lst
+
+	def getH (self, other):
+		H = []
+		if len(self.l) == len(other.l):
+			for i in range (len(self.l)):
+				if abs(self.l[i] - other.l[i]) >= epsilon:
+					H.append(abs(self.l[i] - other.l[i]))
+				else:
+					H.append(math.inf)
+		return H
+	def getG (self, other):
+		H = self.getH(other)
+		mini = min(H)
+		for i in range(len(self.l)):
+			if H[i] == mini:
+				G.append(self.l[i] - other.l[i])
+			else:
+				G.append(0)
+
+
 
 class PureStrategy(object):
-	def __init__(self, value):
-		self.value = value
+	def __init__(self, vector):
+		self.vector = vector
 
 	def convertToMixed(self):
-		return MixedStrategy([self.value], [1.0])
+		return MixedStrategy([self.vector], [1.0])
 
 	def __str__(self): # override the default printing function
-		return self.value
+		return self.vector
 
 	def __eq__(self, other): 
-		return (self.value == other.value)
+		return (self.vector == other.vector)
+
+	def expectedPayoff(self, other):
+		alpha = self.vector
+		beta = other.vector
+		if alpha.getH(beta) == math.inf:
+			return 0
+		else:
+			if sum (alpha.getG(beta)) > 0:
+				return 1 # POS
+			else:
+				return -1 # NEG
+
+
 
 # WARNING!!!!
 # I have just changed the strategy to a dictionary
 
 class MixedStrategy(object):
 	d = {}
-	def __init__(self, values, probabilities):
-		if len(values) == len(probabilities) and 1 - sum(probabilities) < 0.0001 :
-			for i in range (len(values)):
-				self.d[values[i]] = probabilities[i]
+	def __init__(self, vectors, probabilities):
+		if len(vectors) == len(probabilities) and 1 - sum(probabilities) < 0.0001 :
+			for i in range (len(vectors)):
+				self.d[vectors[i]] = probabilities[i]
 		else:
-			print ('error', values, probabilities, sum(probabilities)) # TODO: make this an exception
+			print ('error', vectors, probabilities, sum(probabilities)) # TODO: make this an exception
 		
 	def support (self):
 		l = []

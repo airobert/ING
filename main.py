@@ -59,13 +59,19 @@ class  Platform(object):
 
 		
 def main():
+	# These are some test examples 
 
-	r = PureStrategy(Vector([1]))
-	s = PureStrategy(Vector([1.03]))
-	print (r.vector.getH(s.vector))
-	print (r == s)
+	# r = PureStrategy(Vector([1, 2.4, 3]))
+	# s = PureStrategy(Vector([0, 3, 6]))
+	# print ('h', r.vector.getH(s.vector))
+	# print ('g', r.vector.getG(s.vector))
+	# print ('expected (r->s): ', r.expectedPayoff(s))
+
 	# m = MixedStrategy([Vector([1]),Vector([2])], [0.3, 0.7])
 	# n = MixedStrategy([Vector([1]),Vector([2])], [0.5, 0.5])
 	
+	# playING (1, 2, 0) # k, n, sigma
+	print (PureStrategy(4, 2))
+
 if __name__ == "__main__":
 	main()

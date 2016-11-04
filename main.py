@@ -11,7 +11,7 @@ from strategy import *
 rounds = 5 # how many rounds of games do we iterate
 # repeat = 10 # repeat ten times for each round and calculate the average payoff
 
-ROCK = 0
+ROCs= 0
 PAPER = 1
 SCISSORS = 2
 
@@ -25,10 +25,10 @@ class  Platform(object):
 
 	# the expected payoff for (pure strategy c1 against c2)
 	def payoff (self, c1, c2): # zero sum game
-		# rock = 0, paper = 1, scissors = 2
+		# rocs= 0, paper = 1, scissors = 2
 		# +-------------------------------------------+
-		# |           | rock 0 | paper 1 | scissors 2 |  
-		# | rock 0    |      0 |      -1 |          1 |
+		# |           | rocs0 | paper 1 | scissors 2 |  
+		# | rocs0    |      0 |      -1 |          1 |
 		# | paper 1   |      1 |       0 |         -1 |
 		# | scissors 2|     -1 |       1 |          0 |
 		# +-------------------------------------------+  
@@ -71,7 +71,17 @@ def main():
 	# n = MixedStrategy([Vector([1]),Vector([2])], [0.5, 0.5])
 	
 	# playING (1, 2, 0) # k, n, sigma
-	print (PureStrategy(4, 2))
+	for i in range (10):
+		p = PureStrategy(4, 2) 
+		print (p)
+		print ('evolve')
+		p.evolve()
+		print(p)
+		print ('\n\n\n\n')
+
+
+
+
 
 if __name__ == "__main__":
 	main()

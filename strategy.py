@@ -6,19 +6,21 @@ import random
 
 
 class Vector(object):
-	bitL = []
-	numL = []
-	def __init__(self, k, n):
+	def __init__(self, s, n):
+		self.s = s
+		self.n = n
+		self.numL = []
+		self.bitL = []
 		for i in range(n):
 			v = []
-			for j in range (k):
+			for j in range (s):
 				v.append(random.randrange(0,2))
 			self.bitL.append(v) 
-			self.numL.append(sum(v))
+			self.numL.append(sum(v)) 
 
 	def getH (self, other):
 		H = []
-		for i in range (len(self.numL)):
+		for i in range (self.n):
 			if abs(self.numL[i] - other.numL[i]) >= epsilon:
 				H.append(abs(self.numL[i] - other.numL[i]))
 			else:
@@ -29,42 +31,44 @@ class Vector(object):
 		G = []
 		H = self.getH(other)
 		mini = min(H)
-		for i in range(len(self.numL)):
+		for i in range(self.n):
 			if H[i] == mini:
 				G.append(self.numL[i] - other.numL[i])
 			else:
 				G.append(0)
 		return G
-
-	def evlove(self):
+	
+	def evolve(self):
 		bitL = []
 		numL = []
-		for i in range(n):
+		print ('s = ', self.s)
+		for i in range(self.n):
 			b = []
-			n = []
-			for j in range (k):
+			for j in range (self.s):
 				if (random.random() < 0.01): # with less than 1% of the chance to change	
 					b.append((self.bitL[i][j] + 1)%2) # flip it over
-					# n.append(sum(self.bitL[i]))
+					print ('**************************')
 				else:
-					b.append(self.bitL[i])
-					# n.append(self.numL[i])
-				n.append(sum(self.bitL[i]))
+					b.append(self.bitL[i][j])
 			bitL.append(b)
-			numL.append(n)
+			numL.append(sum(b))
 		self.bitL = bitL
 		self.numL = numL
-
+		print(' n = ', len(self.numL))
 
 
 	def __str__(self):
-		return str(self.bitL) + '\n' + str(self.numL)
+		return str(self.numL)
 
 
 
 class PureStrategy(object):
 	def __init__(self, k, n):
 		self.vector = Vector(k, n)
+		print('s= ', k, ' n = ', n)
+
+	def evolve(self):
+		self.vector.evolve()
 		
 
 	def convertToMixed(self):
@@ -103,7 +107,7 @@ class MixedStrategy(object):
 		
 	def support (self):
 		l = []
-		for k in self.d.keys():
+		for s in self.d.keys(): 
 			if self.d[k] != 0:
 				l.append(PureStrategy(k))
 		return l
@@ -117,7 +121,7 @@ class MixedStrategy(object):
 
 	def __eq__(self, other):
 		flag = True
-		for k in self.d.keys():
+		for s in self.d.keys():
 			if self.d[k] != other.d[k]:
 				flag = False
 		return flag

@@ -10,9 +10,10 @@ from strategy import *
 		
 def main():
 
-	playING (1, 2, 0) # k, n, sigma
-	a = Agent(k, n, sigma)
-	a.play()
+	a = Agent(10,2,0)
+	a.iteration(3)
+	# for i in range (10):
+		# print (MixedStrategy(10,2,3))	
 
 if __name__ == "__main__":
 	main()

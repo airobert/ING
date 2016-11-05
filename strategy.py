@@ -65,7 +65,6 @@ class Vector(object):
 class PureStrategy(object):
 	def __init__(self, k, n):
 		self.vector = Vector(k, n)
-		print('s= ', k, ' n = ', n)
 
 	def evolve(self):
 		self.vector.evolve()
@@ -98,13 +97,23 @@ class PureStrategy(object):
 
 class MixedStrategy(object):
 	d = {}
-	def __init__(self, vectors, probabilities):
-		if len(vectors) == len(probabilities) and 1 - sum(probabilities) < 0.0001 :
-			for i in range (len(vectors)):
-				self.d[vectors[i]] = probabilities[i]
+	def __init__(self, k, n, size):
+		total = 0
+		for i in range(size):
+			rd = random.randint(0, 5)
+			self.d[Vector(k, n)] = rd
+			total += rd
+
+		if total == 0:
+			# this mixed strategy is of size one
+			strategies.append(random.choice(self.pureStrategies).convertToMixed())
 		else:
-			print ('error', vectors, probabilities, sum(probabilities)) # TODO: make this an exception
-		
+			for v in self.pureStrategies:
+				i = v.value
+				pc[i] = pc[i]/total
+				# print ('so', i, pc[i])
+			strategies.append(MixedStrategy(list(pc.keys()), list(pc.values())))
+
 	def support (self):
 		l = []
 		for s in self.d.keys(): 

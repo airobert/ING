@@ -11,100 +11,33 @@ import sys
 
 
 class Agent: # the default one is a Naive agent playing simple a strategy
-	name = 'example'
-	pureStrategies = []
-	N = []
-	M = []
-	piN = 0
 	# payoff  function
-	def __init__ (self, name, pureStrategies):
-		self.name = name
-		self.pureStrategies = pureStrategies
+	def __init__ (self, k, n, sigma):
+		self.k = k
+		self.n = n
 		# at the beginning N is inialised as an arbitrary pure strategy
 		self.piN = random.choice(self.pureStrategies).convertToMixed()
 		self.N = self.piN.support() 
 		# M is initialised as empty list
 		self.M = []
-
-
-	def printInfo(self):
-		print ('This agent is called: ', self.name)
-		print ('There are the following strategies:')
-		for p in self.pureStrategies:
-			print ('\t', p)
 			
 	# every time the searching heuristic returns to the most num strategies.
 	# if after termi_num, there is no new winning strategy discovered, we terminate 
 	def iteration (self, num, termi_num):
-		count = 0 # we consider that we have the solution if for termi_num times the 
-		# searching heuristic still does not give us anything new. 
-		while count < termi_num:
-			print ('\n\n\n\n-----------------the current strategy is\n\t', self.piN)
-			print ('----------------discover strategies (T)------------------------')
-			T = self.searchWithHeuristic(num)
-			# test against piN and obtain the winners
-			W = []
-			for t in T:
-				print ('discovered: ', t)
-			print ('-----------------find winning strategies (W)--------------------')
-			for t in T:
-				if self.payoff (t, self.piN) > 0:
-					W.append(t)
-					print ('winner: ', t)
-			if len(W) != 0:
-				print('------------------find N+M+W ------------------------------')
-				# solve and find the piN'
-				# set union N, M, W
-				for n in self.N:
-					print ('N', n)
-				for m in self.M:
-					print ('M', m)
-				l = []
-				for w in W:
-					l += w.support()
-				print ('=====')
 
-				WNM = l + self.N + self.M
-				# remove duplicates
-				WNM2 = []
-				for i in range(len(WNM)):
-					flag = False
-					for w in WNM2:
-						if WNM[i].value == w.value:
-							flag = True
-					if flag == False:
-						WNM2.append(WNM[i])
-				for a in WNM2:
-					print ('W+N+M: ', a)
-				WNM = WNM2
+		# 0) initialize meory and update with a random stategy
 
-				print ('---------------- use linear programming and solve --------')
-				self.solve(WNM)
-				print ('----------------the updated piN is ------------------')
-				print (self.piN)
-				self.N = self.piN.support()
+		# 1) initialize population of szie 100 with random stategies
 
-				for n in self.N:
-					print ('N', n)
-				self.M = []
-				for m in WNM :
-					# if it is in N, remove
-					flag = False
-					for n in self.N:
-						if m.value == n.value:
-							flag = True
-					if not flag :
-						self.M.append(m)
-						
-				for m in self.M:
-					print ('M', m) 
+		# 2) evolve population aginst N for 30 generations (one poch)
+			# a) evaluate each individual (pure strategy) s in the population aginst N
+			# b) the fitness of individual i is fi
+			# c) copy the 10 most-fit individuals to the next generateion
+			# d) fill the remaining 90 positions with offspring using fitness proportinate
 
+		# 3) If highest-scoring individual ^s in population beats N, then update memory with s^
 
-			else:
-				print ('There is no winning strategy, skip this turn: ', count)
-				count += 1
-		print ('The final strategy is: ', self.piN)
-
+		# 4) go to step 1.
 
 	def solve(self, WNM):
 		# WNM is a list of pure strategies

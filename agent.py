@@ -41,13 +41,16 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 			population.append(MixedStrategy(self.k, self.n, self.size))
 			print (i, ' is \n', population[i] , '\n') 
 
-		termi = 0
+		termi = 0 
+		epoch = 0
+		mean = []
+		median = []
 		while (termi < termi_num):
 			print ('\n\n\n\n\n\nterminate?', termi)
 			# 2) evolve population against N for 30 generations (one poch)
 			# best = 0
 			for it in range (30):
-				print ('****************\n\nthis is iteration \n\n', it)
+				# print ('****************\n\nthis is iteration \n\n', it)
 				# a) evaluate each individual (pure strategy) s in the population aginst N
 				w = []
 				for i in range(Hundred):
@@ -76,7 +79,7 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 							best = f[j]
 							bestsofar = j
 					ten_best.append(bestsofar)
-				print ('\nthe ten best are', ten_best)
+				# print ('\nthe ten best are', ten_best)
 
 				new_population = []
 				for i in ten_best:
@@ -115,22 +118,37 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 							new_population.append(c)# asexual reproduction
 							j = Hundred
 						j+=1
-				print ('\n the other ninty are ', selected)
+				# print ('\n the other ninty are ', selected)
 				population =  new_population
-			# 3) If highest-scoring individual ^s in population beats N, then update memory with s^
-			if (population[0].expectedPayoff(self.piN) > 0):
+			# 3) If highest-scoring individual ^s in population beats N, then update memory with ^s
+			w = []
+			best = population[0]
+			best_value = -1
+			for p in population:
+				poff = p.expectedPayoff(self.piN)
+				w.append(poff)
+				if poff  > 0:
+					best = p
+					best_value = poff
+
+			if (best_value > 0):
 				print ('************************* Here I will replace! *************************')
-				self.piN = copy.copy(population[0])
+				self.piN = copy.copy(best)
 				self.N = self.piN.support()
 				termi = 0
 				print ('*******The new one is:   \n', self.piN)
 			else:
 				termi += 1
+			epoch += 1
+			mean.append(sum(w)/ len(w))
+			index = int(len(w)/2)
+			median.append(sorted(w)[index])
+
 
 		# 4) go to step 1.
 
-		print ('finally, the best strategy we got is: ', self.piN)
-
+		print ('finally, the best strategy we got is: ', self.piN, '  after ', len(mean), ' iterations')
+		return (mean, median)
 	# def solve(self, WNM):
 	# 	# WNM is a list of pure strategies
 	# 	# create a matrix

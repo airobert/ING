@@ -7,13 +7,22 @@ import random
 import sys
 from strategy import *
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 		
 def main():
 
-	a = Agent(10,2,0)
-	a.iteration(3)
+	a = Agent(10,2,5)
+	(mean, median) = a.iteration(3)
+	print (mean)
+	print (median)
+	t = range(len(mean))
 	# for i in range (10):
-		# print (MixedStrategy(10,2,3))	
+	# m = MixedStrategy(10,2,3)
+	# print (m, ' = ', m.mean(), ' ', m.median())
+	plt.plot(t, mean, 'r--', t, median, 'b--')
+	plt.show()	
 
 if __name__ == "__main__":
 	main()

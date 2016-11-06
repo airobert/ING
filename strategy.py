@@ -87,6 +87,8 @@ class Vector(object):
 			h += self.numL[i] * 100
 		return h
 
+	# def mean (self):
+	# 	return (sum(self.numL) / len(self.numL))
 
 class PureStrategy(object):
 	def __init__(self, k, n):
@@ -114,6 +116,9 @@ class PureStrategy(object):
 		alpha = self.vector
 		beta = other.vector
 		return alpha.payoff(beta)
+
+	# def mean(self):
+	# 	return self.vector.mean()
 
 		
 
@@ -182,7 +187,20 @@ class MixedStrategy(object):
 		return payoff
 
 
+	# def mean (self):
+	# 	m = 0
+	# 	for v in self.d.keys():
+	# 		m += self.d[v] * v.mean()
+	# 	return (m)
 
+
+	# def median(self):
+	# 	m = []
+	# 	for v in self.d.keys():
+	# 		m.append(v.mean())
+	# 	m = sorted(m)
+	# 	index = int(len(m)/2)
+	# 	return (m[index])
 		
 
 

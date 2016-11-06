@@ -39,24 +39,28 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 		for i in range (Hundred):
 			# add to the population
 			population.append(MixedStrategy(self.k, self.n, self.size))
-			print (i, ' is \n', population[i] , '\n') 
+			# print (i, ' is \n', population[i] , '\n') 
 
 		termi = 0 
 		epoch = 0
-		mean = []
+		meanList = []
 		median = []
 		while (termi < termi_num):
 			print ('\n\n\n\n\n\nterminate?', termi)
 			# 2) evolve population against N for 30 generations (one poch)
 			# best = 0
-			for it in range (30):
+			mean = 0
+			REPEAT = 10
+			for it in range (REPEAT):
 				# print ('****************\n\nthis is iteration \n\n', it)
 				# a) evaluate each individual (pure strategy) s in the population aginst N
 				w = []
-				for i in range(Hundred):
-					p = population[i]
-					w.append(p.expectedPayoff(self.piN))
-
+				for p in population:
+					score = 0
+					for q in population:
+						score += p.expectedPayoff(q)
+					w.append(score/Hundred)
+				print('--', it)
 				# print ('after evaluation, w is', w)
 
 
@@ -65,6 +69,9 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 				f = []
 				for i in range (Hundred):
 					f.append(w[i] - w_min + 0.1) # why this ?
+				m = max(f)
+				f_index = f.index(m)
+				mean += w[f_index]
 
 				# print ('\n\n\nafter evaluation, f is', f)
 
@@ -120,35 +127,37 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 						j+=1
 				# print ('\n the other ninty are ', selected)
 				population =  new_population
-			# 3) If highest-scoring individual ^s in population beats N, then update memory with ^s
+
 			w = []
 			best = population[0]
 			best_value = -1
 			for p in population:
-				poff = p.expectedPayoff(self.piN)
-				w.append(poff)
-				if poff  > 0:
-					best = p
-					best_value = poff
+				score = 0
+				for q in population:
+					score += p.expectedPayoff(q)
+				v = score/Hundred
+				w.append(v)
+				if v > best_value :
+					best = p 
+					best_value = v
 
-			if (best_value > 0):
+
+			if (best.expectedPayoff(self.piN) > 0):
 				print ('************************* Here I will replace! *************************')
-				self.piN = copy.copy(best)
-				self.N = self.piN.support()
+				# here we use the BOG strategy
+				self.piN = copy.copy(best) # update by the best of generation
+				# self.N = self.piN.support(self.piN)
 				termi = 0
-				print ('*******The new one is:   \n', self.piN)
+				print ('*******The new one is:   \n', self.piN) 
 			else:
 				termi += 1
 			epoch += 1
-			mean.append(sum(w)/ len(w))
-			index = int(len(w)/2)
-			median.append(sorted(w)[index])
-
+			meanList.append(mean/REPEAT)
 
 		# 4) go to step 1.
 
-		print ('finally, the best strategy we got is: ', self.piN, '  after ', len(mean), ' iterations')
-		return (mean, median)
+		print ('finally, the best strategy we got is: ', self.piN, '  after ', len(meanList), ' iterations')
+		return (meanList)
 	# def solve(self, WNM):
 	# 	# WNM is a list of pure strategies
 	# 	# create a matrix

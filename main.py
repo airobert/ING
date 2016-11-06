@@ -14,14 +14,13 @@ import matplotlib.pyplot as plt
 def main():
 
 	a = Agent(10,2,5)
-	(mean, median) = a.iteration(3)
+	mean = a.iteration(3)
 	print (mean)
-	print (median)
 	t = range(len(mean))
 	# for i in range (10):
 	# m = MixedStrategy(10,2,3)
 	# print (m, ' = ', m.mean(), ' ', m.median())
-	plt.plot(t, mean, 'r--', t, median, 'b--')
+	plt.plot(t, mean, 'r--')
 	plt.show()	
 
 if __name__ == "__main__":

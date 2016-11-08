@@ -22,7 +22,7 @@ class Vector(object):
 		# 	self.numL.append(sum(v)) 
 
 		for i in range (n):
-			self.numL.append(random.randrange(0,k))
+			self.numL.append(random.randrange(0,k+1))
 
 
 	def getH (self, other):

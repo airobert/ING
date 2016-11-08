@@ -168,6 +168,7 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 		print('piN = ', self.piN)
 		print ('===================================================')
 		Hundred = 100
+		Msize = 20 # memory size
 		# 1) initialize population of size 100 with random stategies
 
 		termi = 0 
@@ -233,9 +234,43 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 				for n in WNM:
 					if n not in self.N:
 						self.M.append(n)
-				print ('\n')
-				# for m in self.M:
-				# 	print ('new M', m) 
+
+				# *******************************
+				#       the rest is about forgetting
+				#***********************************
+				if len(self.M) > Msize:
+
+					w = []
+					for p in self.M:
+						score = 0
+						for q in self.M:
+							score += p.expectedPayoff(q)
+						w.append(score/Hundred)
+					# print('--', it)
+					# print ('after evaluation, w is', w)
+
+
+					# b) the fitness of individual i is f[i]
+					w_min = min(w)
+					f = []
+					for i in range (len(self.M)):
+						f.append(w[i] - w_min + 0.1) #
+					
+					# select Msize amount of pure strategies and keep them in M.
+
+					newM = []
+					for j in range(Msize):
+						bestf = -1
+						bestIndex = -1
+						for i in range (len(f)):
+							if f[i] > bestf and self.M[bestIndex] not in newM:
+								bestIndex = i 
+								bestf = f[bestIndex]
+						newM.append(self.M[bestIndex])
+
+					self.M = newM
+
+
 				termi = 0
 
 		print ('The final strategy is: ', self.piN)

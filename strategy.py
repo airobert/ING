@@ -78,7 +78,11 @@ class Vector(object):
 
 
 	def __str__(self):
-		return str(self.numL)
+		s =''
+		for i in self.numL:
+			s += (str(i)+'_')
+
+		return s
 
 
 	def __hash__(self):
@@ -111,6 +115,15 @@ class PureStrategy(object):
 	def __eq__(self, other): 
 		return (self.vector == other.vector)
 
+
+	def __hash__(self):
+		v = self.vector
+		# print ('------->', v.n)
+		h = 0
+		for i in range( self.vector.n ):
+			h += v.numL[i] * 100
+		return h
+
 	def expectedPayoff(self, other):
 
 		alpha = self.vector
@@ -123,6 +136,7 @@ class PureStrategy(object):
 		
 
 class MixedStrategy(object):
+
 	def __init__(self, k, n, size):
 		self.d = {}
 		total = 0
@@ -146,6 +160,10 @@ class MixedStrategy(object):
 				self.d[v] = self.d[v]/total
 		# print (sum(self.d.values()))
 
+	def reset(self):
+		
+		self.d = {}
+
 	def evolve (self):
 		tmp = {}
 		# for i in self.d.keys():
@@ -161,7 +179,7 @@ class MixedStrategy(object):
 		self.d = tmp
 
 
-	def support (self):
+	def support (self): # TODO: make this a set !!!!!!!!!!!!!!!!!!
 		l = []
 		for v in self.d.keys(): 
 			if self.d[v] != 0:

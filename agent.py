@@ -26,7 +26,7 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 			
 	# every time the searching heuristic returns to the most num strategies.
 	# if after termi_num, there is no new winning strategy discovered, we terminate 
-	def iteration (self, termi_num):
+	def playBOG (self, termi_num):
 		# 0) initialize meory and update with a random stategy
 		self.piN = MixedStrategy(self.k, self.n, self.size) # starting from a random mixed strategy of size 3
 		
@@ -50,7 +50,7 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 			# 2) evolve population against N for 30 generations (one poch)
 			# best = 0
 			mean = 0
-			REPEAT = 10
+			REPEAT = 30
 			for it in range (REPEAT):
 				# print ('****************\n\nthis is iteration \n\n', it)
 				# a) evaluate each individual (pure strategy) s in the population aginst N
@@ -158,6 +158,187 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 
 		print ('finally, the best strategy we got is: ', self.piN, '  after ', len(meanList), ' iterations')
 		return (meanList)
+
+
+
+	def playNash (self, termi_num):
+		# 0) initialize meory and update with a random stategy
+		self.piN = MixedStrategy(self.k, self.n, self.size) # starting from a random mixed strategy of size 3
+		
+		print('piN = ', self.piN)
+		print ('===================================================')
+		Hundred = 400
+		# 1) initialize population of size 100 with random stategies
+		population = [] 
+		# print ('initial population')
+		for i in range (Hundred):
+			# add to the population
+			population.append(MixedStrategy(self.k, self.n, self.size))
+			# print (i, ' is \n', population[i] , '\n') 
+
+		termi = 0 
+		epoch = 0
+		meanList = []
+		median = []
+		while (termi < termi_num):
+			print ('\n\n\n\n\n\nterminate?', termi)
+			mean = 0
+			REPEAT = 30
+			# for it in range (REPEAT):
+				# 2) evolve population against N for 30 generations (one poch)
+				# this corresponds to searching heurstic
+				# best = 0
+				# T = population
+				# 
+			T = population
+			W = []  # select winning strategy
+			for p in population:
+				if p.expectedPayoff(self.piN) > 0:
+					W.append(p)
+			print ('----------->>>>>there are ', len(W), 'winning strategies')
+			# start the game
+			if len(W) == 0:
+				print('no winning strategy this turn') 
+				termi += 1
+
+			elif len(W) == 1: 
+				print ('only one winning strategy, better replace the piN with it')
+				self.piN = W[0]
+				self.N = self.piN.support()
+			else:
+				# now let's compute the pure strategies in W
+				# initialise a set Wset
+
+				WNM = set()
+				for w in W:
+					# note that w is now a mixed strategy, we have to compute its support
+					WNM |= set(w.support())
+					# print ('Wset is now', Wset)
+				# print (WNM)
+				# next we generate the matrix M
+				WNM |= set(self.N)
+				WNM |= set(self.M)
+
+				print ('------------->>>> there are ', len(WNM), ' pure strategies in WNM')
+
+				self.solve (WNM)
+				print ('----------------the updated piN is ------------------') 
+				# print ('piN = \n', self.piN) 
+				self.N = self.piN.support() 
+				# don't forget to update M 
+
+				for n in self.N:
+					print ('new N', n)
+				for n in WNM:
+					if n not in self.N:
+						self.M.append(n)
+				print ('\n')
+				for m in self.M:
+					print ('new M', m) 
+
+		print ('The final strategy is: ', self.piN)
+		return (0,0)
+
+	def solve(self, WNM):
+		size = len (WNM)
+		
+		M = []
+		for r in WNM: 
+			row = []
+			for c in WNM: 
+				row.append(r.expectedPayoff(c))
+			M.append(row)
+		# print (M)
+
+		# TODO : Robert needs to document these
+		prob = LpProblem("solve", LpMaximize) # the row player is always trying to maximise
+
+		# define size-many variables
+		variables = []
+		for w in WNM:
+			# print ('w as '+str(w))
+			x = LpVariable('x'+str(w), 0, 1) 
+			variables.append(x)
+
+		v = LpVariable("v", 0)
+
+		# Objective
+		prob += v
+
+		# Constraints
+		for i in range(size):
+			acc = 0
+			for j in range(size):
+				acc += M[j][i] * variables[j] 
+			prob += v <= acc # the column player will always want to minimise
+
+		acc = 0
+		for x in variables:
+			acc += x
+		prob += acc == 1
+
+
+		GLPK().solve(prob)
+		print ('------------------solving-------------------------')
+		# Solution
+		vectors = []
+		probabilities = []
+		self.piN.reset()
+
+		for v in prob.variables():
+			# print ('decoding ', v.name)
+			# print ('value', v.varValue)
+			for w in WNM:
+				# print ('to match with ', str(w))
+
+				if v.name == 'x'+ str(w) and v.varValue != 0:
+					
+					self.piN.d[w.vector] = v.varValue
+					# for k in self.piN.d.keys():
+					# 	print ('<-', k)
+
+		print ("objective=", value(prob.objective))
+
+
+
+
+
+		# 	if (best.expectedPayoff(self.piN) > 0):
+		# 		print ('************************* Here I will replace! *************************')
+		# 		# here we use the BOG strategy
+		# 		self.piN = copy.copy(best) # update by the best of generation
+		# 		# self.N = self.piN.support(self.piN)
+		# 		termi = 0
+		# 		print ('*******The new one is:   \n', self.piN) 
+		# 	else:
+		# 		termi += 1
+		# 	epoch += 1
+		# 	meanList.append(mean/REPEAT)
+
+		# # 4) go to step 1.
+
+		# print ('finally, the best strategy we got is: ', self.piN, '  after ', len(meanList), ' iterations')
+		# return (meanList)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	# def solve(self, WNM):
 	# 	# WNM is a list of pure strategies
 	# 	# create a matrix

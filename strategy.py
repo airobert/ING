@@ -14,12 +14,16 @@ class Vector(object):
 		self.n = n
 		self.numL = []
 		self.bitL = []
-		for i in range(n):
-			v = []
-			for j in range (k):
-				v.append(random.randrange(0,2)) # this won't work in fact
-			self.bitL.append(v) 
-			self.numL.append(sum(v)) 
+		# for i in range(n):
+		# 	v = []
+		# 	for j in range (k):
+		# 		v.append(random.randrange(0,2)) 
+		# 	self.bitL.append(v) 
+		# 	self.numL.append(sum(v)) 
+
+		for i in range (n):
+			self.numL.append(random.randrange(0,k))
+
 
 	def getH (self, other):
 		H = []

@@ -17,7 +17,7 @@ class Vector(object):
 		for i in range(n):
 			v = []
 			for j in range (k):
-				v.append(random.randrange(0,2))
+				v.append(random.randrange(0,2)) # this won't work in fact
 			self.bitL.append(v) 
 			self.numL.append(sum(v)) 
 

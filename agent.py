@@ -167,14 +167,8 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 		
 		print('piN = ', self.piN)
 		print ('===================================================')
-		Hundred = 400
+		Hundred = 100
 		# 1) initialize population of size 100 with random stategies
-		population = [] 
-		# print ('initial population')
-		for i in range (Hundred):
-			# add to the population
-			population.append(MixedStrategy(self.k, self.n, self.size))
-			# print (i, ' is \n', population[i] , '\n') 
 
 		termi = 0 
 		epoch = 0
@@ -183,18 +177,22 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 		while (termi < termi_num):
 			print ('\n\n\n\n\n\nterminate?', termi)
 			mean = 0
-			REPEAT = 30
+			# REPEAT = 30
 			# for it in range (REPEAT):
 				# 2) evolve population against N for 30 generations (one poch)
 				# this corresponds to searching heurstic
 				# best = 0
 				# T = population
 				# 
-			T = population
+			T = []
+			for i in range (Hundred):
+				# add to the population
+				T.append(MixedStrategy(self.k, self.n, self.size))
 			W = []  # select winning strategy
-			for p in population:
+			for p in T:
 				if p.expectedPayoff(self.piN) > 0:
 					W.append(p)
+			print ('piN=', self.piN)
 			print ('----------->>>>>there are ', len(W), 'winning strategies')
 			# start the game
 			if len(W) == 0:
@@ -203,12 +201,15 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 
 			elif len(W) == 1: 
 				print ('only one winning strategy, better replace the piN with it')
+				tmp = self.N + self.M
 				self.piN = W[0]
 				self.N = self.piN.support()
+				# why do I always forget to update M?
+				self.M = list(set(tmp) - set(self.N)) 
+				termi = 0
 			else:
 				# now let's compute the pure strategies in W
 				# initialise a set Wset
-
 				WNM = set()
 				for w in W:
 					# note that w is now a mixed strategy, we have to compute its support
@@ -227,14 +228,15 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 				self.N = self.piN.support() 
 				# don't forget to update M 
 
-				for n in self.N:
-					print ('new N', n)
+				# for n in self.N:
+				# 	print ('new N', n)
 				for n in WNM:
 					if n not in self.N:
 						self.M.append(n)
 				print ('\n')
-				for m in self.M:
-					print ('new M', m) 
+				# for m in self.M:
+				# 	print ('new M', m) 
+				termi = 0
 
 		print ('The final strategy is: ', self.piN)
 		return (0,0)
@@ -287,7 +289,8 @@ class Agent: # the default one is a Naive agent playing simple a strategy
 
 		for v in prob.variables():
 			# print ('decoding ', v.name)
-			# print ('value', v.varValue)
+			if (v.varValue >1):
+				print ('error value***********', v.varValue)
 			for w in WNM:
 				# print ('to match with ', str(w))
 
